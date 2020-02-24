@@ -1,33 +1,31 @@
-{-# LANGUAGE NamedFieldPuns        #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
-
-module Main where
 
 import           Control.Lens
 import           Control.Monad
 import           Data.Aeson                 as A
 import           Data.Aeson.Lens
+import qualified Data.HashMap.Lazy          as HML
+import qualified Data.Text                  as T
 import           Development.Shake
 import           Development.Shake.Classes
-import           Development.Shake.Forward
 import           Development.Shake.FilePath
+import           Development.Shake.Forward
 import           GHC.Generics               (Generic)
 import           Slick
-
-import qualified Data.HashMap.Lazy as HML
-import qualified Data.Text                  as T
 
 ---Config-----------------------------------------------------------------------
 
 siteMeta :: SiteMeta
 siteMeta =
-    SiteMeta { siteAuthor = "Me"
+    SiteMeta { siteAuthor = "Jonathan Lorimer"
              , baseUrl = "https://example.com"
-             , siteTitle = "My Slick Site"
-             , twitterHandle = Just "myslickhandle"
-             , githubUser = Just "myslickgithubuser"
+             , siteTitle = "Jonathan Lorimer"
+             , githubUser = "myslickgithubuser"
+             , linkedInUser = "jonathan-lorimer-dev"
+             , twitterUser = "jonathanlorime1"
              }
 
 outputFolder :: FilePath
@@ -41,18 +39,22 @@ withSiteMeta (Object obj) = Object $ HML.union obj siteMetaObj
     Object siteMetaObj = toJSON siteMeta
 withSiteMeta _ = error "only add site meta to objects"
 
+mergeObjects :: [Value] -> Value
+mergeObjects = Object . HML.unions . map (\(Object x) -> x)
+
 data SiteMeta =
-    SiteMeta { siteAuthor    :: String
-             , baseUrl       :: String -- e.g. https://example.ca
-             , siteTitle     :: String
-             , twitterHandle :: Maybe String -- Without @
-             , githubUser    :: Maybe String
+    SiteMeta { siteAuthor   :: String
+             , baseUrl      :: String
+             , siteTitle    :: String
+             , githubUser   :: String
+             , linkedInUser :: String
+             , twitterUser  :: String
              }
     deriving (Generic, Eq, Ord, Show, ToJSON)
 
 -- | Data for the index page
-data IndexInfo =
-  IndexInfo
+data PostsInfo =
+  PostsInfo
     { posts :: [Post]
     } deriving (Generic, Show, FromJSON, ToJSON)
 
@@ -67,13 +69,25 @@ data Post =
          }
     deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
--- | given a list of posts this will build a table of contents
-buildIndex :: [Post] -> Action ()
-buildIndex posts' = do
+
+
+-- buildCV :: Action ()
+-- buildCV  = do
+--   indexT <- compileTemplate' "site/templates/cv.html"
+
+buildIndex :: Action ()
+buildIndex = do
   indexT <- compileTemplate' "site/templates/index.html"
-  let indexInfo = IndexInfo {posts = posts'}
-      indexHTML = T.unpack $ substitute indexT (withSiteMeta $ toJSON indexInfo)
+  let indexHTML = T.unpack $ substitute indexT $ toJSON siteMeta
   writeFile' (outputFolder </> "index.html") indexHTML
+
+-- | given a list of posts this will build a table of contents
+buildTableOfContents :: [Post] -> Action ()
+buildTableOfContents posts' = do
+  postsT <- compileTemplate' "site/templates/posts.html"
+  let postsInfo = PostsInfo {posts = posts'}
+      postsHTML = T.unpack $ substitute postsT (withSiteMeta $ toJSON postsInfo)
+  writeFile' (outputFolder </> "posts.html") postsHTML
 
 -- | Find and build all posts
 buildPosts :: Action [Post]
@@ -109,10 +123,11 @@ copyStaticFiles = do
 buildRules :: Action ()
 buildRules = do
   allPosts <- buildPosts
-  buildIndex allPosts
+  buildIndex
+  buildTableOfContents allPosts
   copyStaticFiles
 
 main :: IO ()
 main = do
-  let shOpts = shakeOptions { shakeVerbosity = Chatty}
+  let shOpts = shakeOptions { shakeVerbosity = Chatty, shakeLintInside = ["\\"] }
   shakeArgsForward shOpts buildRules

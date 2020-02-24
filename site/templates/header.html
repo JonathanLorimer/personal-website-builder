@@ -3,6 +3,9 @@
         <a id="beacon" href="/">
             <div id="home-text"> HOME </div>
         </a>
+        <a href="/posts.html">
+          <div id="posts-text"> POSTS </div>
+        </a>
     </nav>
 
     <div class="right-sidebar">
@@ -12,11 +15,16 @@
         </a>
         {{/githubUser}}
 
-        {{#twitterHandle}}
+        {{#linkedInUser}}
+        <a class="ext-link" href="https://linkedin.com/{{twitterHandle}}">
+            <img src="/images/linked-in-logo.jpg" alt="LinkedIn Profile"/>
+        </a>
+        {{/linkedInUser}}
+
+        {{#twitterUser}}
         <a class="ext-link" href="https://twitter.com/{{twitterHandle}}">
             <img src="/images/twitter-logo.png" alt="Twitter Profile"/>
         </a>
-        {{/twitterHandle}}
-    <div id="theme-button">DAY</div>
+        {{/twitterUser}}
     </div>
 </header>
