@@ -1,13 +1,16 @@
-{-# LANGUAGE DeriveAnyClass    #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveAnyClass        #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE OverloadedLabels      #-}
+{-# LANGUAGE OverloadedStrings     #-}
 
 import           Control.Lens
 import           Control.Monad
 import           Data.Aeson                 as A
 import           Data.Aeson.Lens
 import qualified Data.HashMap.Lazy          as HML
+import           Data.List                  (sort)
 import qualified Data.Text                  as T
 import           Development.Shake
 import           Development.Shake.Classes
@@ -69,11 +72,87 @@ data Post =
          }
     deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
+-- | Data for CV
+data Bio = Bio { email    :: String
+               , phone    :: String
+               , location :: String
+               , content  :: String
+               } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
+
+data Technology =
+  Technology { technology :: String } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
 
 
--- buildCV :: Action ()
--- buildCV  = do
---   indexT <- compileTemplate' "site/templates/cv.html"
+data Experience =
+  Experience { company      :: String
+             , location     :: String
+             , title        :: String
+             , startDate    :: String
+             , endDate      :: Maybe String
+             , technologies :: [Technology]
+             , content      :: String
+             } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
+
+instance Ord Experience where
+  Experience { startDate = sd1 } `compare` Experience { startDate = sd2 } =
+    sd1 `compare` sd2
+
+data Education =
+  Education { schoolName :: String
+            , startDate  :: String
+            , endDate    :: String
+            , credential :: String
+            } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
+
+data CV = CV { bio        ::  Bio
+             , experience :: [Experience]
+             , education  :: [Education]
+             } deriving (Generic, Eq, Show, FromJSON, ToJSON)
+
+buildExperience :: FilePath -> Action Experience
+buildExperience srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
+  liftIO . putStrLn $ "Rebuilding CV/experience: " <> srcPath
+  experienceContent <- readFile' srcPath
+  -- load post content and metadata as JSON blob
+  experienceData <- markdownToHTML . T.pack $ experienceContent
+  convert experienceData
+
+buildBio :: FilePath -> Action Bio
+buildBio srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
+  liftIO . putStrLn $ "Rebuilding CV/bio: " <> srcPath
+  bioContent <- readFile' srcPath
+  -- load post content and metadata as JSON blob
+  bioData <- markdownToHTML . T.pack $ bioContent
+  convert bioData
+
+buildEducation :: FilePath -> Action Education
+buildEducation srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
+  liftIO . putStrLn $ "Rebuilding CV/education: " <> srcPath
+  eduContent <- readFile' srcPath
+  -- load post content and metadata as JSON blob
+  eduData <- markdownToHTML . T.pack $ eduContent
+  convert eduData
+
+buildCV :: Action ()
+buildCV  = do
+
+  -- Get Paths
+  [bioPath] <- getDirectoryFiles "." ["site/cv//bio.md"]
+  experiencePaths <- getDirectoryFiles "." ["site/cv/experience//*.md"]
+  educationPaths <- getDirectoryFiles "." ["site/cv/education//*.md"]
+
+  -- Build Data Structures
+  bioData <- buildBio bioPath
+  expsData <- forP experiencePaths buildExperience
+  edusData <- forP educationPaths buildEducation
+  let cvData = CV { bio = bioData
+                  , experience = sort expsData
+                  , education = edusData
+                  }
+  -- Compile HTML
+  cvT <- compileTemplate' "site/templates/cv.html"
+  let cvHTML = T.unpack $ substitute cvT $ withSiteMeta $ toJSON cvData
+  writeFile' (outputFolder </> "cv.html") cvHTML
 
 buildIndex :: Action ()
 buildIndex = do
@@ -123,6 +202,7 @@ copyStaticFiles = do
 buildRules :: Action ()
 buildRules = do
   allPosts <- buildPosts
+  buildCV
   buildIndex
   buildTableOfContents allPosts
   copyStaticFiles

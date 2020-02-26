@@ -1,0 +1,23 @@
+<ul>
+    {{#experience}}
+        <li>
+            <div>{{company}}</div>
+            <div>{{location}}</div>
+            <div>{{title}}</div>
+            <div>{{startDate}}</div>
+
+            {{#endDate}}
+            <div>{{endDate}}</div>
+            {{/endDate}}
+            {{^endDate}}
+            <div>Current</div>
+            {{/endDate}}
+            <ul>
+              {{#technologies}}
+              <li>{{technology}}</li>
+              {{/technologies}}
+            </ul>
+            <div>{{{content}}}</div>
+        </li>
+    {{/experience}}
+</ul>

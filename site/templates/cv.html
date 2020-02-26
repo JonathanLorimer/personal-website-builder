@@ -1,0 +1,15 @@
+{{>site/templates/head.html}}
+<body>
+    {{>site/templates/header.html}}
+    <div id="index">
+      <h1> CV </h1>
+      <h2> {{ siteAuthor }} </h2>
+      <h2> {{ bio.location }} </h2>
+      <h2> {{{ bio.email }}} </h2>
+      <h2> {{ bio.phone }} </h2>
+      <p> {{ bio.content}} </p>
+      {{>site/templates/experience.html}}
+      {{>site/templates/education.html}}
+    </div>
+
+{{>site/templates/footer.html}}

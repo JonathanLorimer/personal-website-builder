@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 69b04ccda50b02c400102b2bc38e78fae6edac00a6ec3000193ab41742161262
+-- hash: 28c696b31546c5dd817a87eed7fc6583796293cfa38d78c8db501026807af7f0
 
 name:           slick-template
 version:        0.1.0.0
@@ -33,7 +33,7 @@ executable build-site
       Paths_slick_template
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , base >=4.7 && <5
