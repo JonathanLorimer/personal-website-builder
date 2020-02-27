@@ -1,10 +1,10 @@
 name:                slick-template
 version:             0.1.0.0
-github:              "Me/my-site"
+github:              "jonathanlorimer/jonathanlorimer.github.io"
 license:             BSD3
-author:              "Me"
-maintainer:          "example@example.com"
-copyright:           "20XX Me"
+author:              "Jonathan Lorimer"
+maintainer:          "jonathan_lorimer@mac.com"
+copyright:           "2020 Jonathan Lorimer"
 
 extra-source-files:
 - README.md
@@ -20,8 +20,8 @@ executables:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
-    - -Wall
     - -threaded
+    - -Wall
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:

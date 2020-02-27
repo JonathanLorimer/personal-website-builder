@@ -23,10 +23,10 @@ import           Slick
 
 siteMeta :: SiteMeta
 siteMeta =
-    SiteMeta { siteAuthor = "Jonathan Lorimer"
+    SiteMeta { siteAuthor = "jonathanlorimer"
              , baseUrl = "https://example.com"
              , siteTitle = "Jonathan Lorimer"
-             , githubUser = "myslickgithubuser"
+             , githubUser = "jonathanlorimer"
              , linkedInUser = "jonathan-lorimer-dev"
              , twitterUser = "jonathanlorime1"
              }
@@ -42,8 +42,8 @@ withSiteMeta (Object obj) = Object $ HML.union obj siteMetaObj
     Object siteMetaObj = toJSON siteMeta
 withSiteMeta _ = error "only add site meta to objects"
 
-mergeObjects :: [Value] -> Value
-mergeObjects = Object . HML.unions . map (\(Object x) -> x)
+-- mergeObjects :: [Value] -> Value
+-- mergeObjects = Object . HML.unions . map (\(Object x) -> x)
 
 data SiteMeta =
     SiteMeta { siteAuthor   :: String

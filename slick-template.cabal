@@ -4,18 +4,18 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 28c696b31546c5dd817a87eed7fc6583796293cfa38d78c8db501026807af7f0
+-- hash: 809fa3b6a6fe01fc9e8f426f6c87c0f1a7ed9d27ee5a9713ff2df47e95986a5d
 
 name:           slick-template
 version:        0.1.0.0
 synopsis:       My site built with slick!
 description:    My slick Site
 category:       Slick-Site
-homepage:       https://github.com/Me/my-site#readme
-bug-reports:    https://github.com/Me/my-site/issues
-author:         Me
-maintainer:     example@example.com
-copyright:      20XX Me
+homepage:       https://github.com/jonathanlorimer/jonathanlorimer.github.io#readme
+bug-reports:    https://github.com/jonathanlorimer/jonathanlorimer.github.io/issues
+author:         Jonathan Lorimer
+maintainer:     jonathan_lorimer@mac.com
+copyright:      2020 Jonathan Lorimer
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -25,7 +25,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/Me/my-site
+  location: https://github.com/jonathanlorimer/jonathanlorimer.github.io
 
 executable build-site
   main-is: Main.hs
@@ -33,7 +33,7 @@ executable build-site
       Paths_slick_template
   hs-source-dirs:
       app
-  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -Wall -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
     , base >=4.7 && <5

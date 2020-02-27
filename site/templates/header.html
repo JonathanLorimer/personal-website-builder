@@ -1,33 +1,27 @@
 <header>
-    <nav>
-        <a id="beacon" href="/">
-            <div id="home-text"> HOME </div>
+    <nav class="nav-grid">
+        <div id="ln-1" class="ln">1</div>
+        <div id="ln-2" class="ln">2</div>
+        <div id="ln-3" class="ln">3</div>
+        <div id="ln-4" class="ln">~</div>
+        <div id="ln-5" class="ln">~</div>
+        <div id="ln-6" class="ln">~</div>
+        <div id="data-menu">
+          <div class="data">data</div>
+          <div class="menu">Menu</div>
+        </div>
+        <div id="equals">=</div>
+        <div class="sum1">|</div>
+        <div class="sum2">|</div>
+        <a id="home-btn" href="/">
+            <div id="home-text"> Home </div>
         </a>
-        <a href="/posts.html">
-          <div id="posts-text"> POSTS </div>
+        <a id="posts-btn" href="/posts.html">
+          <div id="posts-text"> Posts [Post] </div>
         </a>
-        <a href="/cv.html">
-          <div id="posts-text"> CV </div>
+        <a id="about-me-btn" href="/aboutMe.html">
+          <div id="about-me"> AboutMe </div>
         </a>
     </nav>
 
-    <div class="right-sidebar">
-        {{#githubUser}}
-        <a class="ext-link" href="https://github.com/{{githubUser}}">
-            <img src="/images/github-logo.png" alt="Github Profile"/>
-        </a>
-        {{/githubUser}}
-
-        {{#linkedInUser}}
-        <a class="ext-link" href="https://linkedin.com/{{twitterHandle}}">
-            <img src="/images/linked-in-logo.jpg" alt="LinkedIn Profile"/>
-        </a>
-        {{/linkedInUser}}
-
-        {{#twitterUser}}
-        <a class="ext-link" href="https://twitter.com/{{twitterHandle}}">
-            <img src="/images/twitter-logo.png" alt="Twitter Profile"/>
-        </a>
-        {{/twitterUser}}
-    </div>
 </header>
