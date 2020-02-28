@@ -104,14 +104,14 @@ data Education =
             , credential :: String
             } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
 
-data CV = CV { bio        ::  Bio
-             , experience :: [Experience]
-             , education  :: [Education]
-             } deriving (Generic, Eq, Show, FromJSON, ToJSON)
+data AboutMe = AboutMe { bio        ::  Bio
+                       , experience :: [Experience]
+                       , education  :: [Education]
+                       } deriving (Generic, Eq, Show, FromJSON, ToJSON)
 
 buildExperience :: FilePath -> Action Experience
 buildExperience srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
-  liftIO . putStrLn $ "Rebuilding CV/experience: " <> srcPath
+  liftIO . putStrLn $ "Rebuilding aboutme/experience: " <> srcPath
   experienceContent <- readFile' srcPath
   -- load post content and metadata as JSON blob
   experienceData <- markdownToHTML . T.pack $ experienceContent
@@ -119,7 +119,7 @@ buildExperience srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
 
 buildBio :: FilePath -> Action Bio
 buildBio srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
-  liftIO . putStrLn $ "Rebuilding CV/bio: " <> srcPath
+  liftIO . putStrLn $ "Rebuilding about/bio: " <> srcPath
   bioContent <- readFile' srcPath
   -- load post content and metadata as JSON blob
   bioData <- markdownToHTML . T.pack $ bioContent
@@ -127,32 +127,32 @@ buildBio srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
 
 buildEducation :: FilePath -> Action Education
 buildEducation srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
-  liftIO . putStrLn $ "Rebuilding CV/education: " <> srcPath
+  liftIO . putStrLn $ "Rebuilding aboutme/education: " <> srcPath
   eduContent <- readFile' srcPath
   -- load post content and metadata as JSON blob
   eduData <- markdownToHTML . T.pack $ eduContent
   convert eduData
 
-buildCV :: Action ()
-buildCV  = do
+buildAboutMe :: Action ()
+buildAboutMe  = do
 
   -- Get Paths
-  [bioPath] <- getDirectoryFiles "." ["site/cv//bio.md"]
-  experiencePaths <- getDirectoryFiles "." ["site/cv/experience//*.md"]
-  educationPaths <- getDirectoryFiles "." ["site/cv/education//*.md"]
+  [bioPath] <- getDirectoryFiles "." ["site/aboutme//bio.md"]
+  experiencePaths <- getDirectoryFiles "." ["site/aboutme/experience//*.md"]
+  educationPaths <- getDirectoryFiles "." ["site/aboutme/education//*.md"]
 
   -- Build Data Structures
   bioData <- buildBio bioPath
   expsData <- forP experiencePaths buildExperience
   edusData <- forP educationPaths buildEducation
-  let cvData = CV { bio = bioData
-                  , experience = sort expsData
-                  , education = edusData
-                  }
+  let aboutMeData = AboutMe { bio = bioData
+                            , experience = sort expsData
+                            , education = edusData
+                            }
   -- Compile HTML
-  cvT <- compileTemplate' "site/templates/cv.html"
-  let cvHTML = T.unpack $ substitute cvT $ withSiteMeta $ toJSON cvData
-  writeFile' (outputFolder </> "cv.html") cvHTML
+  aboutMeT <- compileTemplate' "site/templates/aboutme.html"
+  let cvHTML = T.unpack $ substitute aboutMeT $ withSiteMeta $ toJSON aboutMeData
+  writeFile' (outputFolder </> "aboutme.html") cvHTML
 
 buildIndex :: Action ()
 buildIndex = do
@@ -193,7 +193,12 @@ buildPost srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
 -- | Copy all static files from the listed folders to their destination
 copyStaticFiles :: Action ()
 copyStaticFiles = do
-    filepaths <- getDirectoryFiles "./site/" ["images//*", "css//*", "js//*"]
+    filepaths <- getDirectoryFiles "./site/"
+      ["images//*"
+      , "css//*"
+      , "js//*"
+      , "fonts//*"
+      ]
     void $ forP filepaths $ \filepath ->
         copyFileChanged ("site" </> filepath) (outputFolder </> filepath)
 
@@ -202,7 +207,7 @@ copyStaticFiles = do
 buildRules :: Action ()
 buildRules = do
   allPosts <- buildPosts
-  buildCV
+  buildAboutMe
   buildIndex
   buildTableOfContents allPosts
   copyStaticFiles
