@@ -67,8 +67,11 @@ data Post =
          , content :: String
          , url     :: String
          , date    :: String
+         , tags    :: [Tag]
          , image   :: Maybe String
-         }
+         } deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
+
+data Tag = Tag { tag :: String }
     deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
 -- | Data for CV

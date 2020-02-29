@@ -48,7 +48,8 @@ html {
   background: #fef5e6;
 }
 
-body {
+p {
+  margin-top: 1em;
 }
 
 ul {
