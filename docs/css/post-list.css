@@ -1,0 +1,54 @@
+.post-list {
+  padding: 15rem 10rem 10rem;
+}
+
+.post-link {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem;
+}
+
+.detail-container {
+  display: flex;
+}
+
+.post-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex-grow: 0;
+  white-space: nowrap;
+  margin-right: 1rem;
+}
+
+.post-item {
+  background-color: #EEE5D7;
+  font-size: 2rem;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.post-item:hover {
+  background-color: #DBD4C7;
+  transition: all .2s ease-in;
+}
+
+.post-item:hover .post-title {
+  font-weight: 700;
+}
+
+.tag {
+  background-color: gainsboro;
+  color: #1D263B;
+  border-radius: .5rem;
+  font-size: 1.6rem;
+  padding: .4rem;
+  margin-right: 1rem;
+}
+
+.tag:last-of-type {
+  margin-right: 0rem;
+}
+
+
+
