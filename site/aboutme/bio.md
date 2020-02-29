@@ -1,7 +1,6 @@
 ---
-email: jonathan_lorimer@mac.com
-phone: 250-418-0784
-location: Toronto, Ontario, Canada
+location: "Toronto, Ontario, Canada"
+email: "jonathan_lorimer@mac.com"
 ---
 
-I am a software developer who is passionate about functional programming. I have a background in Philosophy, but recently have been interested in Type Systems, Algebraic Structures, and Category Theory. I run the Toronto Haskell Meetup, which is aimed at helping beginners get up to speed, and I run the Toronto Haskell User Group for more advanced participants. I enjoy using domain modeling through types and algebraic abstractions to reason about a problem space and derive a correct implementation.
+I am a software developer based in Toronto who is passionate about functional programming, particularly Haskell. I did my undergraduate degree in Philosophy focusing on epistemology, philosophy of law, and ethics. Recently I have been interested in Type Systems, Algebraic Structures, and Category Theory. I run the [Toronto Haskell Meetup](https://www.meetup.com/meetup-group-evRITRtT), which is aimed at growing the statically typed, ML based, functional programming community locally. In my spare time I am usually trying to learn more about the beautiful structures and techniques that abound in the Haskell ecosystem. When I am not programming I love to mentor and to learn from others, I used to play rugby but have found that I prefer squash these days.

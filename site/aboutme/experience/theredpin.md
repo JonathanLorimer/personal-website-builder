@@ -1,7 +1,7 @@
 ---
 company: TheRedPin
 location: Toronto, Ontario, Canada
-title: Web Developer
+title: Junior Developer
 startDate: 2018/04
 endDate: 2018/07
 technologies: [ { technology: "Vue.js" }

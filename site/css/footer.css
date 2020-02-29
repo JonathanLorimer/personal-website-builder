@@ -1,7 +1,11 @@
 footer {
   text-align: center;
+  padding-bottom: .5rem;
 }
 
+.left-sidebar {
+  padding-left: 1rem;
+}
 .ext-link-img {
     height: 4rem;
     width: 4rem;

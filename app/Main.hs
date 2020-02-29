@@ -4,13 +4,12 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE OverloadedLabels      #-}
 {-# LANGUAGE OverloadedStrings     #-}
-
 import           Control.Lens
 import           Control.Monad
 import           Data.Aeson                 as A
 import           Data.Aeson.Lens
 import qualified Data.HashMap.Lazy          as HML
-import           Data.List                  (sort)
+import           Data.List                  (sortBy)
 import qualified Data.Text                  as T
 import           Development.Shake
 import           Development.Shake.Classes
@@ -74,7 +73,6 @@ data Post =
 
 -- | Data for CV
 data Bio = Bio { email    :: String
-               , phone    :: String
                , location :: String
                , content  :: String
                } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
@@ -91,7 +89,10 @@ data Experience =
              , endDate      :: Maybe String
              , technologies :: [Technology]
              , content      :: String
-             } deriving (Generic, Eq, Show, FromJSON, ToJSON, Binary)
+             } deriving (Generic, Eq, Show, FromJSON, Binary)
+
+instance ToJSON Experience where
+  toJSON = genericToJSON defaultOptions { omitNothingFields = True }
 
 instance Ord Experience where
   Experience { startDate = sd1 } `compare` Experience { startDate = sd2 } =
@@ -119,7 +120,7 @@ buildExperience srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
 
 buildBio :: FilePath -> Action Bio
 buildBio srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
-  liftIO . putStrLn $ "Rebuilding about/bio: " <> srcPath
+  liftIO . putStrLn $ "Rebuilding aboutme/bio: " <> srcPath
   bioContent <- readFile' srcPath
   -- load post content and metadata as JSON blob
   bioData <- markdownToHTML . T.pack $ bioContent
@@ -146,7 +147,7 @@ buildAboutMe  = do
   expsData <- forP experiencePaths buildExperience
   edusData <- forP educationPaths buildEducation
   let aboutMeData = AboutMe { bio = bioData
-                            , experience = sort expsData
+                            , experience = sortBy (flip compare) expsData
                             , education = edusData
                             }
   -- Compile HTML
