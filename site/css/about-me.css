@@ -1,29 +1,5 @@
 .aboutme {
-  padding: 15rem 10rem 10rem;
-}
-
-.title {
-  text-align: center;
-  font-size: 4rem;
-  padding-bottom: 2rem;
-}
-
-.title::after {
-  content: " ";
-  height: 0.1rem;
-  background-color: black;
-  width: 100%;
-  display: block;
-  margin-top: 1rem;
-}
-
-p {
-  font-weight: medium;
-  font-size: 2rem;
-}
-
-h2 {
-  font-weight: 500;
+  padding: 18rem 10rem 10rem;
 }
 
 .bio {

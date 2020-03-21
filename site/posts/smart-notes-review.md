@@ -1,7 +1,8 @@
 ---
 title: "Book Review: How to Take Smart Notes by Sönke Ahrens"
 author: Jonathan Lorimer
-date: March 19, 2020
+date: 19/03/2020
+datePretty: March 19, 2020
 tags: [{ tag: productivity }
       ,{ tag: book-review }]
 description: A review of Sönke Ahrens' book How to Take Smart Notes, a productivity manual for students, academics, and non-fiction book writers.

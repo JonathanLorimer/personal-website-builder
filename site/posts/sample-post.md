@@ -1,7 +1,8 @@
 ---
 title: "Sample Post"
 author: Me
-date: Jan 1, 2019
+date: 1/1/2019
+datePretty: Jan 1, 2019
 tags: [{ tag: slick}
       ,{ tag: site }]
 description: My first blog post using slick

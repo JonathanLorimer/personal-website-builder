@@ -62,13 +62,14 @@ data PostsInfo =
 
 -- | Data for a blog post
 data Post =
-    Post { title   :: String
-         , author  :: String
-         , content :: String
-         , url     :: String
-         , date    :: String
-         , tags    :: [Tag]
-         , image   :: Maybe String
+    Post { title      :: String
+         , author     :: String
+         , content    :: String
+         , url        :: String
+         , date       :: String
+         , datePretty :: String
+         , tags       :: [Tag]
+         , image      :: Maybe String
          } deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
 data Tag = Tag { tag :: String }
@@ -168,7 +169,7 @@ buildIndex = do
 buildTableOfContents :: [Post] -> Action ()
 buildTableOfContents posts' = do
   postsT <- compileTemplate' "site/templates/posts.html"
-  let postsInfo = PostsInfo {posts = posts'}
+  let postsInfo = PostsInfo { posts = sortBy (\x y -> compare (date y) (date x)) posts' }
       postsHTML = T.unpack $ substitute postsT (withSiteMeta $ toJSON postsInfo)
   writeFile' (outputFolder </> "posts.html") postsHTML
 
