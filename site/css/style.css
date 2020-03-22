@@ -2,8 +2,7 @@
 @font-face {
   font-family: 'Iosevka';
   src: url('/fonts/iosevka-term-medium.woff') format('woff');
-  font-weight: 500;
-}
+  font-weight: 500; }
 
 @font-face { font-family: 'Iosevka';
   src: url('/fonts/iosevka-term-light.woff') format('woff');
@@ -60,6 +59,23 @@ h2 {
 
 ul {
   list-style-type: none;
+}
+
+blockquote {
+  color: #AAA49B;
+  padding-left: 2rem;
+  position: relative;
+}
+
+blockquote::before {
+  content: " ";
+  width: 0.2rem;
+  background-color: #AAA49B;
+  height: 100%;
+  display: block;
+  left: 0;
+  top: 0;
+  position: absolute;
 }
 
 #index {
