@@ -13,7 +13,11 @@
 
     <div class="date">{{datePretty}}</div>
 
-    <div class="metadata">
+    <div class="post-tags">
+      <span>Tags: </span>
+      {{#tags}}
+      <span class="post-tag" id="{{tag}}">{{tag}}</span>
+      {{/tags}}
     </div>
 
     <article class="post-content">

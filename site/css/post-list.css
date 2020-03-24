@@ -76,12 +76,12 @@
 
 /* Tags */
 
-.productivity {
+#productivity {
   background-color: #9c7a84;
   color: #fef5e6;
 }
 
-.book-review {
+#book-review {
   background-color: #92a34c;
   color: #fef5e6;
 }
