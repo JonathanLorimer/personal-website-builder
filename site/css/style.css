@@ -23,6 +23,14 @@
   padding: 0;
 }
 
+@media screen and (min-width: 1280px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 
 a {
   text-decoration: none;
@@ -45,6 +53,23 @@ html {
   font-size: 62.5%;
   color: #1d263b;
   background: #fef5e6;
+}
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 56.25%
+  }
+}
+
+@media screen and (max-width: 680px) {
+  html {
+    font-size: 50%
+  }
+}
+@media screen and (max-width: 600px) {
+  html {
+    font-size: 45%
+  }
 }
 
 p {
@@ -80,6 +105,7 @@ blockquote::before {
 
 #index {
   width: 100%;
+  max-width: 128rem;
 }
 
 .title {

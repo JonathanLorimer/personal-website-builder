@@ -18,4 +18,11 @@ footer {
     opacity: 1;
 }
 
+@media screen and (min-width: 1280px) {
+  .left-sidebar {
+    padding-bottom: 2rem;
+    padding-left: 0rem;
+  }
+}
+
 /*# sourceMappingURL=footer.css.map */

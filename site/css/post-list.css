@@ -1,6 +1,11 @@
 .post-list {
   padding: 18rem 10rem 10rem;
 }
+@media screen and (max-width: 600px) {
+  .post-list {
+    padding: 9rem 5rem 5rem;
+  }
+}
 
 .post-link {
   width: 100%;
@@ -10,6 +15,8 @@
 }
 .detail-container {
   display: flex;
+  min-width: 40rem;
+  margin-right: 2rem;
 }
 
 .post-title {
@@ -43,6 +50,13 @@
   font-size: 1.6rem;
   padding: .4rem;
   margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .tag {
+    display: none;
+  }
 }
 
 .tag:last-of-type {
@@ -52,6 +66,12 @@
 
 .list-date {
   font-size: 2rem;
+}
+
+@media screen and (max-width: 500px) {
+  .list-date {
+    display: none;
+  }
 }
 
 /* Tags */
