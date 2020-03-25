@@ -74,6 +74,8 @@ header {
     justify-content: center;
   }
   header { width: 100%; }
+  .no-link { display: flex;}
+  .btn:hover { padding-left: 0rem; }
 }
 
 /*# sourceMappingURL=header.css.map */
