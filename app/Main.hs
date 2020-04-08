@@ -126,17 +126,8 @@ data AtomData = AtomData
   , posts :: [Post]
   , currentTime :: String
   , atomUrl :: String
-  } deriving (Generic, Eq, Ord, Show)
+  } deriving (Generic, ToJSON, Eq, Ord, Show)
 
-instance ToJSON AtomData where
-  toJSON AtomData{..} = object
-    [ "title" A..= title
-    , "domain" A..= domain
-    , "author" A..= author
-    , "posts" A..= posts
-    , "currentTime" A..= currentTime
-    , "atomUrl" A..= atomUrl
-    ]
 {------------------------------------------------
                     Builders
 ------------------------------------------------}
