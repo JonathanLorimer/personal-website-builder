@@ -119,14 +119,14 @@ data AboutMe = AboutMe { bio        ::  Bio
                        , education  :: [Education]
                        } deriving (Generic, Eq, Show, FromJSON, ToJSON)
 
-data AtomData = AtomData
-  { title :: String
-  , domain :: String
-  , author :: String
-  , posts :: [Post]
-  , currentTime :: String
-  , atomUrl :: String
-  } deriving (Generic, ToJSON, Eq, Ord, Show)
+data AtomData =
+  AtomData { title :: String
+           , domain :: String
+           , author :: String
+           , posts :: [Post]
+           , currentTime :: String
+           , atomUrl :: String
+           } deriving (Generic, ToJSON, Eq, Ord, Show)
 
 {------------------------------------------------
                     Builders
