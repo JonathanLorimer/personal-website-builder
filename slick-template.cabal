@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 809fa3b6a6fe01fc9e8f426f6c87c0f1a7ed9d27ee5a9713ff2df47e95986a5d
+-- hash: 506316a6e96a3016444e8726833d2d830e2cd1583af015c5c2450dc09fed29dd
 
 name:           slick-template
 version:        0.1.0.0
@@ -43,5 +43,6 @@ executable build-site
     , shake
     , slick
     , text
+    , time
     , unordered-containers
   default-language: Haskell2010

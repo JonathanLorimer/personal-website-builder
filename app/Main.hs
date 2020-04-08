@@ -2,8 +2,10 @@
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE OverloadedLabels      #-}
 {-# LANGUAGE OverloadedStrings     #-}
+
 import           Control.Lens
 import           Control.Monad
 import           Data.Aeson                 as A
@@ -11,6 +13,7 @@ import           Data.Aeson.Lens
 import qualified Data.HashMap.Lazy          as HML
 import           Data.List                  (sortBy)
 import qualified Data.Text                  as T
+import           Data.Time
 import           Development.Shake
 import           Development.Shake.Classes
 import           Development.Shake.FilePath
@@ -18,7 +21,9 @@ import           Development.Shake.Forward
 import           GHC.Generics               (Generic)
 import           Slick
 
----Config-----------------------------------------------------------------------
+{------------------------------------------------
+                    Config
+------------------------------------------------}
 
 siteMeta :: SiteMeta
 siteMeta =
@@ -33,16 +38,15 @@ siteMeta =
 outputFolder :: FilePath
 outputFolder = "docs/"
 
---Data models-------------------------------------------------------------------
-
 withSiteMeta :: Value -> Value
 withSiteMeta (Object obj) = Object $ HML.union obj siteMetaObj
   where
     Object siteMetaObj = toJSON siteMeta
 withSiteMeta _ = error "only add site meta to objects"
 
--- mergeObjects :: [Value] -> Value
--- mergeObjects = Object . HML.unions . map (\(Object x) -> x)
+{------------------------------------------------
+                  Data Models
+------------------------------------------------}
 
 data SiteMeta =
     SiteMeta { siteAuthor   :: String
@@ -62,14 +66,15 @@ data PostsInfo =
 
 -- | Data for a blog post
 data Post =
-    Post { title      :: String
-         , author     :: String
-         , content    :: String
-         , url        :: String
-         , date       :: String
-         , datePretty :: String
-         , tags       :: [Tag]
-         , image      :: Maybe String
+    Post { title       :: String
+         , author      :: String
+         , content     :: String
+         , url         :: String
+         , date        :: String
+         , datePretty  :: String
+         , description :: String
+         , tags        :: [Tag]
+         , image       :: Maybe String
          } deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
 data Tag = Tag { tag :: String }
@@ -114,6 +119,27 @@ data AboutMe = AboutMe { bio        ::  Bio
                        , education  :: [Education]
                        } deriving (Generic, Eq, Show, FromJSON, ToJSON)
 
+data AtomData = AtomData
+  { title :: String
+  , domain :: String
+  , author :: String
+  , posts :: [Post]
+  , currentTime :: String
+  , atomUrl :: String
+  } deriving (Generic, Eq, Ord, Show)
+
+instance ToJSON AtomData where
+  toJSON AtomData{..} = object
+    [ "title" A..= title
+    , "domain" A..= domain
+    , "author" A..= author
+    , "posts" A..= posts
+    , "currentTime" A..= currentTime
+    , "atomUrl" A..= atomUrl
+    ]
+{------------------------------------------------
+                    Builders
+------------------------------------------------}
 buildExperience :: FilePath -> Action Experience
 buildExperience srcPath = cacheAction ("build" :: T.Text, srcPath) $ do
   liftIO . putStrLn $ "Rebuilding aboutme/experience: " <> srcPath
@@ -207,14 +233,47 @@ copyStaticFiles = do
     void $ forP filepaths $ \filepath ->
         copyFileChanged ("site" </> filepath) (outputFolder </> filepath)
 
--- | Specific build rules for the Shake system
---   defines workflow to build the website
+formatDate :: String -> String
+formatDate humanDate = toIsoDate parsedTime
+  where
+    parsedTime =
+      parseTimeOrError True defaultTimeLocale "%b %e, %Y" humanDate :: UTCTime
+
+rfc3339 :: Maybe String
+rfc3339 = Just "%H:%M:%SZ"
+
+toIsoDate :: UTCTime -> String
+toIsoDate = formatTime defaultTimeLocale (iso8601DateFormat rfc3339)
+
+buildFeed :: [Post] -> Action ()
+buildFeed posts = do
+  now <- liftIO getCurrentTime
+  let atomData =
+        AtomData
+          { title = "Jonathan Lorimer"
+          , domain = "https://jonathanlorimer.dev"
+          , author = "Jonathan Lorimer"
+          , posts = mkAtomPost <$> posts
+          , currentTime = toIsoDate now
+          , atomUrl = "/atom.xml"
+          }
+  atomTempl <- compileTemplate' "site/templates/atom.xml"
+  writeFile' (outputFolder </> "atom.xml") . T.unpack $ substitute atomTempl (toJSON atomData)
+
+mkAtomPost :: Post -> Post
+mkAtomPost p = p { date = formatDate $ datePretty p }
+
+{------------------------------------------------
+                 Shake Build
+ ------------------------------------------------}
+
 buildRules :: Action ()
 buildRules = do
   allPosts <- buildPosts
   buildAboutMe
   buildIndex
   buildTableOfContents allPosts
+  buildFeed allPosts
   copyStaticFiles
 
 main :: IO ()

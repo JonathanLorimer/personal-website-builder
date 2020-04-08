@@ -32,5 +32,6 @@ executables:
     - containers
     - unordered-containers
     - lens
+    - time
     - aeson
     - lens-aeson
