@@ -77,8 +77,7 @@ data Post =
          , image       :: Maybe String
          } deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
 
-data Tag = Tag { tag :: String }
-    deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
+type Tag = String
 
 -- | Data for CV
 data Bio = Bio { email    :: String

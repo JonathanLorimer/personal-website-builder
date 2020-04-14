@@ -4,8 +4,7 @@ author: Jonathan Lorimer
 date: 19/03/2020
 datePretty: Mar 19, 2020
 description: "A review of How to Take Smart Notes by Sönke Ahrens. The verdict on the book was largely negative. Aside from the review I give an overview of the zettelkasten structure and workflow, and discuss why the process seems so opaque at first."
-tags: [{ tag: productivity }
-      ,{ tag: book-review }]
+tags: [productivity, book-review]
 ---
 
 # Table of Contents
