@@ -3,6 +3,7 @@ company: Ecobee
 location: Toronto, Ontario, Canada
 title: Web Developer
 startDate: 2019/01
+endDate: 2020/03
 technologies: [ { technology: "Node.js" }
               , { technology: "React" }
               , { technology: "React-Native" }

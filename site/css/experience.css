@@ -14,16 +14,16 @@
 
 .employment-details {
   padding-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .job-title {
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 500;
 }
 
 .company {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   font-weight: 300;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .description {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .technologies {
