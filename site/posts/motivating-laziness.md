@@ -76,7 +76,7 @@ There are two intermediate normal forms. The first is **Weak Head Normal Form** 
 ```
 #### Reduction Orders
 
-From here, things get slightly more complicated, but also more interesting. **Normal Order** (NO) reduction evaluates the leftmost redex by passing the argument _unevaluated_, while **Applicative Order** (AO) evaluates that argument that is being passed. One can already imagine that AO evaluation is more efficient; rather than passing around unevaluated lambda terms, why not evaluate them once and then substitute them in a more reduced form? AO evaluation also has a drawback of eagerly reducing a λ-expression, what if this expression is unused? Or worse, what if it never terminates? To summarize the distinction between the two evaluation orders, NO reduction has the benefit of terminating more frequently than AO evaluation, but at the cost of a potentially more expensive reduction process. To clarify, all λ-expressions that terminate upon AO reduction will also terminate upon NO reduction, but not necessarily the other way around. Below are two examples of the differences between AO and NO reduction, the first highlights the inefficiency of NO, while the second illustrates non-termination of AO.
+From here, things get slightly more complicated, but also more interesting. **Normal Order** (NO) reduction evaluates the leftmost redex by passing the argument _unevaluated_, while **Applicative Order** (AO) evaluates that argument that is being passed. One can already imagine that AO evaluation is more efficient (in the sense of fewer reduction steps); rather than passing around unevaluated lambda terms, why not evaluate them once and then substitute them in a more reduced form? AO evaluation also has a drawback of eagerly reducing a λ-expression, what if this expression is unused? Or worse, what if it never terminates? To summarize the distinction between the two evaluation orders, NO reduction has the benefit of terminating more frequently than AO evaluation, but at the cost of a potentially more expensive reduction process. To clarify, all λ-expressions that terminate upon AO reduction will also terminate upon NO reduction, but not necessarily the other way around. Below are two examples of the differences between AO and NO reduction, the first highlights the inefficiency of NO, while the second illustrates non-termination of AO.
 
 ```
 -- Inefficiency of Normal Order Reduction
@@ -84,18 +84,18 @@ From here, things get slightly more complicated, but also more interesting. **No
 -- Normal Order Reduction
 1. (λx.xx)((λa.b.c.c)(λs.s)(λt.t))                  =>
 2. ((λa.b.c.c)(λs.s)(λt.t))((λa.b.c.c)(λs.s)(λt.t)) =>
-3. (λb.c.c)(λt.t))((λa.b.c.c)(λs.s)(λt.t))          =>
+3. ((λb.c.c)(λt.t))((λa.b.c.c)(λs.s)(λt.t))         =>
 4. (λc.c)((λa.b.c.c)(λs.s)(λt.t))                   =>
 5. (λc.c)((λb.c.c)(λt.t))                           =>
 6. (λc.c)(λc.c)                                     =>
 7. λc.c
-
+------------------------------------------------------
 -- Applicative Order Reduction
 1. (λx.xx)((λa.b.c.c)(λs.s)(λt.t)) =>
 2. (λx.xx)((λb.c.c)(λt.t))         =>
 3. (λx.xx)(λc.c)                   =>
 4. (λc.c)(λc.c)                    =>
-5. (λc.c)
+5. λc.c
 ```
 
 ```
@@ -106,15 +106,21 @@ From here, things get slightly more complicated, but also more interesting. **No
 2. (λs.(λx.y.y)(s s))(λs.(λx.y.y)(s s)))           =>
 3. (λx.y.y)((λs.(λx.y.y)(s s))(λs.(λx.y.y)(s s)))  =>
 4. (λy.y)                                          =>
-
+-----------------------------------------------------
 -- Applicative Order Reduction
 1. (λf.(λs.f(s s))(λs.f(s s)))(λx.y.y)             =>
 
 -- λx.y.y is already in normal form, so we procede
 
 2. (λs.(λx.y.y)(s s)) (λs.(λx.y.y)(s s))           =>
+
+-- The argument λs.(λx.y.y)(s s) is in WHNF so we procede
+
 3. (λx.y.y)
     ((λs.(λx.y.y)(s s)) (λs.(λx.y.y)(s s)))        =>
+
+-- Ahh! (λs.(λx.y.y)(s s))(λs.(λx.y.y)(s s)) can be reduced
+
 4. (λx.y.y)
     ((λx.y.y)
       ((λs.(λx.y.y)(s s)) (λs.(λx.y.y)(s s))))     =>
@@ -130,15 +136,23 @@ From here, things get slightly more complicated, but also more interesting. **No
 
 The non-terminating example is a little bit complex, so let's dig in. There are two parts `(λf.(λs.f(s s))(λs.f(s s)))` and `(λx.y.y)`. The first λ-expression is a common combinator known as a fixpoint, it is a higher order function, that represents a general approach to recursion in the simply typed lambda calculus (basic self application `(λs.ss)λs.ss` doesn't typecheck). It is not important to understand the fixpoint combinator now, but what is important is to recognize that this kind of recursion is impossible in applicative order evaluation, because the generative self application is passed as an argument, and therefore evaluated immediately. Immediate evaluation causes us to wrap our λ to itself infinitely with no opportunity for the logic to fork to a base case. The second λ-expression (`λx.y.y`) was chosen trivially, because it terminates instantly; I didn't want to have to think too hard about a recursive example that terminates in normal order evaluation. However, this function could have been any function at all, and the applicative order evaluation would never terminate.
 
-Another important feature of delayed NO evaluation is that it allows for _codata_, otherwise known as infinite data structures. In the next section we will look at how one can achieve the benefits of both evaluation strategies, but first a summary of the terms we have looked at.
+Another important feature of NO evaluation (which is delayed relative to AO evaluation) is that it allows for _codata_, otherwise known as infinite data structures. In the next section we will look at how one can achieve the benefits of both evaluation strategies, but first a summary of the terms we have looked at.
 
 #### Section Summary
 
+  I mentioned in the introduction that I am interested in making the _why_ of the details (reduction forms and evaluation strategies) of lambda calculus apparent. Lambda calculus is a stunningly simple language, I think that there are 3 syntactic constructs in the whole language (λ-abstraction, application, and variables). Like many ideas in functional programming, lambda calculus is difficult to understand not because it is complicated but because it is so simple. The difficulty arises in the nuance and interpretation of the simple constructs. Therefore it is not λ-abstraction, application, or variables that are tricky, but it is how they work together. It is true that λ-expressions converge on a **Normal Form**, but the order in which we reduce λ-terms have divergent properties (**Normal Order** or **Applicative Order**), so now there is at least 1 important decision to make if we are to automate evaluation. Additionally, there are usually multiple steps in β-reduction, it is unclear at what point we are done each step, is it **Head Normal Form** or **Weak Head Normal Form**?
+  In the abstract of _A Call-By-Need Lambda Calculus_ the authors note that: "The mismatch between the operational semantics of the lambda calculus and the actual behavior of implementations is a major obstacle for compiler writers" (Ariola et al 1995:233). A similar sentiment is noted in the introduction for _The Lazy Lambda Calculus_, after citing a "succesful definition" for lambda calculus predicated on **Head Normal Forms** the author identifies an inconsistency in several prominent implementations of lambda calculus as a programming language: "But do these languages as defined and implemented actually evaluate terms to head normal form? To the best of my knowledge, not a single one of them does so. Instead, they evaluate to weak head normal form" (Abramsky 2002:3). The main point that I am trying to demonstrate with these quotations is that the complexity of the lambda calculus lies in moving from the beautiful, simple, pure semantics to a sensible application. Therefore, a nuanced understanding of lambda calculus and how it can serve as a foundation for a programming language requires an understanding of evaluation strategies and the different intermediary normal forms.
+
 **Normal Form**: A fully evaluated / reduced λ-expression. These are unique, by the Church-Rosser theorem!
+
 **Head Normal Form**: A λ-expression that has all external and internal redexes evaluated, but is not fully evaluated. The only way to achieve a situation like this is to have a bound variable as the leftmost function expression in the body of a λ-expression, whose substitution is delaying evaluation of the entire function body i.e. `λy.(y(λx.x))(λz.z)`
+
 **Weak Head Normal Form**: A λ-expression that has been evaluated up to the last λ-abstraction, but whose function body is still unevaluated.
+
 **Redex**: An unevaluated function application
+
 **Normal Order**: Evaluation by substituting the unevaluated λ-expression for all the bound variables that share the same name as the argument
+
 **Applicative Order**: Reduction by evaluating the λ-expression that the function is applied to, and then substituting the normalized form (could be normal form or head normal form) for all the bound variables that share the same name as the argument.
 
 For those of you who are familiar with Haskell, [monoidmusician](https://github.com/monoidmusician) wrote out a tiny DSL and some predicates to help understand the definitions of normal forms and their distinctions:
@@ -193,7 +207,7 @@ Let's see how this can help us avoid non-termination in the **Applicative Order*
 1. (λf.(λs.f(λdummy.(s s))(λs.f(λdummy.(s s))))(λx.y.y)                      =>
 2. (λs.(λx.y.y)(λdummy.(s s))(λs.(λx.y.y)(λdummy.(s s))))                    =>
 3. (λx.y.y)(λdummy.((λs.(λx.y.y)(λdummy.(s s)))(λs.(λx.y.y)(λdummy.(s s))))) =>
-2. (λy.y)
+4. λy.y
 ```
 
 because the `λdummy` lambda abstraction is in the way, the argument to `λx.y.y` is not evaluated any further, and the entire λ-expression terminates. Let's look at a slightly different example to see how the function we pass to the higher-order recursive function `(λs.f(λdummy.(s s))(λs.f(λdummy.(s s))))` must now choose to explicitly evaluate the thunks. In the first example below I substitute `λx.y.y` for `λx.y.x` a λ-expression that does not terminate, even under **Normal Order** evaluation, when the recursive function is applied to it. However, with the extra layer of thunks, we safely reach a **Weak Head Normal Form**. This is because the function `λx.y.x` does not explicitly evaluate the recursive function. Below the dashed line we can see what happens when we use a function that explicitly evaluates the thunk, `λx.y.x <λ-expr>`, which applies the value `<λ-expr>` (a stand in for any λ-term) to the recursive function to keep it recursing.
@@ -247,9 +261,11 @@ Lazy evaluation has the benefit of terminating as frequently as **Normal Order**
 #### Inconsistent Behaviour
 
 # References
+1. Abramsky, Samson. “The Lazy Lambda Calculus.” Declarative Programming, March 1, 2002.
+2. Ariola, Zena M., John Maraist, Martin Odersky, Matthias Felleisen, and Philip Wadler. “A Call-by-Need Lambda Calculus.” In Proceedings of the 22nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages, 233–246. POPL ’95. New York, NY, USA: Association for Computing Machinery, 1995. https://doi.org/10.1145/199448.199507.
+3. Michaelson, Greg. An Introduction to Functional Programming Through Lambda Calculus. Courier Corporation, 2011.
+4. Turner, David. “Church’s Thesis and Functional Programming.” JOURNAL OF UNIVERSAL COMPUTER SCIENCE 10 (2004): 187–209.
 
-1. Michaelson, Greg. An Introduction to Functional Programming Through Lambda Calculus. Courier Corporation, 2011.
-2. Turner, David. “Church’s Thesis and Functional Programming.” JOURNAL OF UNIVERSAL COMPUTER SCIENCE 10 (2004): 187–209.
 
 
 If you would like to comment on this post, the comments section is [here](https://github.com/JonathanLorimer/personal-website-builder/issues/2)
