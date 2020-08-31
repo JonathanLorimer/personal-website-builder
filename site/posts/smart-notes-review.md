@@ -75,3 +75,6 @@ The workflow for a zettelkasten proceeds as follows:
 # Conclusion
 
 I would recommend reading a collection of articles on how to construct a functional zettelkasten and note taking practice, rather than this book. However, if you are unconvinced about the effectiveness of the zettelkasten methodology, then this book might prove more interesting for you than it did for me.
+
+
+If you would like to comment on this post, the comments section is [here](https://github.com/JonathanLorimer/personal-website-builder/issues/1)
