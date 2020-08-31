@@ -57,23 +57,20 @@ This raises an important point, by the Church-Rosser theorem, all normal forms a
 λa.x.x(λb.b)     => λ-abstraction
 (λc.a.x.xc)(λb.b)
 ```
-A term is said to be **Normalizing** when it has not yet been reduced to normal form. Normal form is important in lambda calculus because it is effectively how computation is carried out, the reduction of a normalizing term shares a parallel with elimination rules in formal logic, or the evaluation of an arithmetic phrase.
+A term is said to be **Normalizing** when it has a normal form but has not yet been reduced to normal form. Normal form is important in lambda calculus because it is effectively how computation is carried out, the reduction of a normalizing term shares a parallel with elimination rules in formal logic, or the evaluation of an arithmetic phrase.
 
 
 ### Intermediate Normal Forms
 
-There are two intermediate normal forms. The first is **Weak Head Normal Form** (WHNF), this is a function whose body contains a function or functions that can be applied further (an unevaluated function application is formally referred to as a **Redex**). Line 1 in the following example is _NOT_ in WHNF because the outermost λ-expression is itself a **Redex**, but once the last external function application has been applied (line 3) the expression is in WHNF. The next reduction (line 4) happens "under the lambda", moving us past WHNF, but we still have valid reduction moves left. It is only once we reach line 5 that we have reached our second intermediate normal form; **Head Normal Form** (HNF). The definition of HNF is that there are no remaining external _OR_ internal redexes, but the λ-expression is not fully evaluated because there is an unsubstituted bound variable that is preventing evaluation. If we apply our λ-expression on line 5 to one more term (after the dashed line) we see that we can continue reduction until we reach **Normal Form** (line 8).
+There are two intermediate normal forms. The first is **Weak Head Normal Form** (WHNF), this is a λ-expression whose body contains a other λ-expressions that can be applied further (an unevaluated function application is formally referred to as a **Redex**). Line 1 in the following example is _NOT_ in WHNF because the leftmost outermost λ-expression is itself a **Redex**, but once the last external function application has been applied (line 3) the expression is in WHNF. A good indication that you are at least in WHNF (using the syntax that I have chosen) is that there are no brackets around the leftmost λ-abstraction. This indicates that there are no external **Redexes**, and all that is left to evaluate is the function body, where a function body is defined as such `λ<bound-variable>.<function-body>`. The next reduction (line 4) happens "under the lambda" in the function body, and now we are in our second intermediate normal form: **Head Normal Form** (HNF). The definition of HNF is that there are no remaining external _OR_ internal redexes, in line 4 `y((λz.z)((λa.a)(λb.b)))` is not considered a redex because the bound variable y is preventing β-reduction. We can, however, continue evaluting the argument expression. For reference, line 4 the bound variable `y` is the function expression, and `((λz.z)((λa.a)(λb.b)))` is the argument expression. We evaluate the argument expression in lines 4 through 6, until we reach **Normal Form**(NF), at which point every λ-expression that can be evaluated has been evaluated. As a re-cap: line 1 and 2 is an external redex and therefore not in any intermediate normal form. Line 3 is the only line that is in WHNF but not in HNF, line 4 and 5 are in HNF but not NF, and line 6 is in NF (it is also technically in HNF and WHNF).To put it more succinctly: WHNF is a superset of HNF, which is a superset of NF.
 
 ```
-1. (λv.x.y.(xy)(xv))(λa.a)(λz.z) =>
-2. (λv.x.y.(xy)(x(λa.a)))(λz.z)  =>
-3. λy.((λz.z)y)((λz.z)(λa.a))    =>
-4. λy.y((λz.z)λa.a)              =>
-5. λy.y(λa.a)                    =>
------------------------------------
-6. (λy.y(λa.a))(λx.x)            =>
-7. (λx.x)(λa.a)                  =>
-8. λa.a
+1. (λv.x.y.(xy)(xv))((λa.a)(λb.b))(λz.z) =>
+2. (λv.x.y.(xy)(x((λa.a))))(λz.z)        =>
+3. λy.((λz.z)y)((λz.z)((λa.a)(λb.b)))    =>
+4. λy.y((λz.z)((λa.a)(λb.b)))            =>
+5. λy.y((λa.a)(λb.b))                    =>
+6. λy.y(λb.b)
 ```
 ### Reduction Orders
 
@@ -111,7 +108,7 @@ From here, things get slightly more complicated, but also more interesting. **No
 -- Applicative Order Reduction
 1. (λf.(λs.f(s s))(λs.f(s s)))(λx.y.y)             =>
 
--- λx.y.y is already in normal form, so we procede
+-- λx.y.y is already in NF, so we procede
 
 2. (λs.(λx.y.y)(s s)) (λs.(λx.y.y)(s s))           =>
 
@@ -135,20 +132,20 @@ From here, things get slightly more complicated, but also more interesting. **No
         ((λs.(λx.y.y)(s s)) (λs.(λx.y.y)(s s)))))
 ```
 
-The non-terminating example is a little bit complex, so let's dig in. There are two parts `(λf.(λs.f(s s))(λs.f(s s)))` and `(λx.y.y)`. The first λ-expression is a common combinator known as a fixpoint, it is a higher order function, that represents a general approach to recursion in the simply typed lambda calculus (basic self application `(λs.ss)λs.ss` doesn't typecheck). It is not important to understand the fixpoint combinator now, but what is important is to recognize that this kind of recursion is impossible in applicative order evaluation, because the generative self application is passed as an argument, and therefore evaluated immediately. Immediate evaluation causes us to wrap our λ to itself infinitely with no opportunity for the logic to fork to a base case. The second λ-expression (`λx.y.y`) was chosen trivially, because it terminates instantly; I didn't want to have to think too hard about a recursive example that terminates in normal order evaluation. However, this function could have been any function at all, and the applicative order evaluation would never terminate.
+The non-terminating example is a little bit complex, so let's dig in. There are two parts `(λf.(λs.f(s s))(λs.f(s s)))` and `(λx.y.y)`. The first λ-expression is a common combinator known as a fixpoint, it is a higher order function, that represents a general approach to recursion in the simply typed lambda calculus (basic self application `(λs.ss)λs.ss` doesn't typecheck). It is not important to understand the fixpoint combinator now, but what is important is to recognize that this kind of recursion is impossible in applicative order evaluation, because the generative self application is passed as an argument, and therefore evaluated immediately. Immediate evaluation causes us to apply our λ-expression to itself infinitely with no opportunity for the logic to fork to a base case. The second λ-expression (`λx.y.y`) was chosen trivially, because it terminates instantly; I didn't want to have to think too hard about a recursive example that terminates in normal order evaluation. However, this function could have been any function at all, and the applicative order evaluation would never terminate.
 
 Another important feature of NO evaluation (which is delayed relative to AO evaluation) is that it allows for _codata_, otherwise known as infinite data structures. In the next section we will look at how one can achieve the benefits of both evaluation strategies, but first a summary of the terms we have looked at.
 
 ### Section Summary
 
   I mentioned in the introduction that I am interested in making the _why_ of the details (reduction forms and evaluation strategies) of lambda calculus apparent. Lambda calculus is a stunningly simple language, I think that there are 3 syntactic constructs in the whole language (λ-abstraction, application, and variables). Like many ideas in functional programming, lambda calculus is difficult to understand, not because it is complicated, but because it is so simple. The difficulty arises in the nuance and interpretation of the simple constructs. Therefore it is not λ-abstraction, application, or variables that are tricky, but it is how they work together. It is true that λ-expressions converge on a **Normal Form**, but the order in which we reduce λ-terms have divergent properties (**Normal Order** may take more steps to reduce, **Applicative Order** may not terminate where NO evaluation would), so now there is at least 1 important decision to make if we are to automate evaluation. Additionally, there are usually multiple steps in β-reduction, it is unclear at what point we are done each step, is it **Head Normal Form** or **Weak Head Normal Form**?
-  In the abstract of _A Call-By-Need Lambda Calculus_ the authors note that: "The mismatch between the operational semantics of the lambda calculus and the actual behavior of implementations is a major obstacle for compiler writers" (Ariola et al 1995:233). A similar sentiment is noted in the introduction for _The Lazy Lambda Calculus_, after citing a "succesful definition" for lambda calculus predicated on **Head Normal Forms** the author identifies an inconsistency in several prominent implementations of lambda calculus as a programming language: "But do these languages as defined and implemented actually evaluate terms to head normal form? To the best of my knowledge, not a single one of them does so. Instead, they evaluate to weak head normal form" (Abramsky 2002:3). The main point that I am trying to demonstrate with these quotations is that the complexity of the lambda calculus lies in moving from the beautiful, simple, pure semantics to a sensible application. Therefore, a nuanced understanding of lambda calculus and how it can serve as a foundation for a programming language requires an understanding of evaluation strategies and the different intermediary normal forms.
+  In the abstract of _A Call-By-Need Lambda Calculus_ the authors note that: "The mismatch between the operational semantics of the lambda calculus and the actual behavior of implementations is a major obstacle for compiler writers" (Ariola et al 1995:233). A similar sentiment is noted in the introduction for _The Lazy Lambda Calculus_, after citing a "succesful definition" for lambda calculus predicated on **Head Normal Forms** the author identifies an inconsistency in several prominent implementations of lambda calculus as a programming language: "But do these languages as defined and implemented actually evaluate terms to head normal form? To the best of my knowledge, not a single one of them does so. Instead, they evaluate to weak head normal form" (Abramsky 2002:3). The main point that I am trying to demonstrate with these quotations is that the complexity of the lambda calculus lies in moving from the beautiful, simple, pure semantics to a sensible application. Therefore, a nuanced understanding of lambda calculus, and how it can serve as a foundation for a programming language, requires an understanding of evaluation strategies and the different intermediary normal forms.
 
 ### Important Definitions
 
 **Normal Form**: A fully evaluated / reduced λ-expression. These are unique, by the Church-Rosser theorem!
 
-**Head Normal Form**: A λ-expression that has all external and internal redexes evaluated, but is not fully evaluated. The only way to achieve a situation like this is to have a bound variable as the leftmost function expression in the body of a λ-expression, whose substitution is delaying evaluation of the entire function body i.e. `λy.(y(λx.x))(λz.z)`
+**Head Normal Form**: A λ-expression that has all external and internal redexes evaluated, but is not fully evaluated. The only way to achieve a situation like this is to have a bound variable as the leftmost function expression in the body of a λ-expression, whose substitution is delaying evaluation of the entire function body i.e. `λy.y((λx.x)(λz.z))`
 
 **Weak Head Normal Form**: A λ-expression that has been evaluated up to the last λ-abstraction, but whose function body is still unevaluated.
 
@@ -168,8 +165,7 @@ isRedex (App (Abs f) a) = True
 isRedex _               = False
 
 isNF :: LC -> Bool
-isNF t | isRedex t = False
-isNF (Abs t)       = isNF t
+isNF t | isRedex t = False isNF (Abs t)       = isNF t
 isNF (App f a)     = isNF f && isNF a
 isNF _             = True
 
@@ -192,11 +188,11 @@ There are two solutions to the problem presented by the asymmetric benefits of t
 
 ### Thunks
 
-A thunk is a method for delaying evaluation by wrapping an expression in an extra layer of λ-abstraction. Thunks require more than just changing the definition, but also the consumers of those thunked values to change the way they consume the value; the consumer must now explicitly evaluate the expressions before using them. The simplest example of a thunk would be this:
+A thunk is a method for delaying evaluation by wrapping an expression in an extra layer of λ-abstraction. Thunks require more than just changing the definition, the consumers of those thunked values need to change the way they handle data; the consumer must now explicitly evaluate the expressions. The simplest example of a thunk would be this:
 
 ```
 1. (λa.a)(λb.b)        -- This would be immediately evaluated
-2. λdummy.(λa.a)(λb.b) -- the evaluation of the internal redex is deffered
+2. λdummy.(λa.a)(λb.b) -- the evaluation of the internal redex is deffered because we are in WHNF now
 ```
 
 Let's see how this can help us avoid non-termination in the **Applicative Order** evaluation example used in the previous section. We should note two things here
@@ -213,7 +209,7 @@ Let's see how this can help us avoid non-termination in the **Applicative Order*
 4. λy.y
 ```
 
-because the `λdummy` lambda abstraction is in the way, the argument to `λx.y.y` is not evaluated any further, and the entire λ-expression terminates. Let's look at a slightly different example to see how the function we pass to the higher-order recursive function `(λs.f(λdummy.(s s))(λs.f(λdummy.(s s))))` must now choose to explicitly evaluate the thunks. In the first example below I substitute `λx.y.y` for `λx.y.x` a λ-expression that does not terminate, even under **Normal Order** evaluation, when the recursive function is applied to it. However, with the extra layer of thunks, we safely reach a **Weak Head Normal Form**. This is because the function `λx.y.x` does not explicitly evaluate the recursive function. Below the dashed line we can see what happens when we use a function that explicitly evaluates the thunk, `λx.y.x <λ-expr>`, which applies the value `<λ-expr>` (a stand in for any λ-term) to the recursive function to keep it recursing.
+Because the `λdummy` lambda abstraction is in the way, the argument to `λx.y.y` is not evaluated any further, and the entire λ-expression terminates. Let's look at a slightly different example to see how the function we pass to the higher-order recursive function `(λs.f(λdummy.(s s))(λs.f(λdummy.(s s))))` must now choose to explicitly evaluate the thunks. In the first example below I substitute `λx.y.y` for `λx.y.x` a λ-expression that does not terminate, even under **Normal Order** evaluation, when the recursive function is applied to it. However, with the extra layer of thunks, we safely reach a **Weak Head Normal Form**. This is because the function `λx.y.x` does not explicitly evaluate the recursive function. Below the dashed line we can see what happens when we use a function that explicitly evaluates the thunk, `λx.y.x <λ-expr>`, which applies the value `<λ-expr>` (a stand in for any λ-term) to the recursive function to keep it recursing.
 
 ```
 1. (λf.(λs.f(λdummy.(s s)))(λs.f(λdummy.(s s))))(λx.y.x)                                             =>
@@ -259,12 +255,14 @@ Lazy Evaluation only evaluates a λ-expression when it is in the function positi
 7. λc.c                                             =>
 ```
 
-Lazy evaluation has the benefit of terminating as frequently as **Normal Order** evaluation, but maintaining the efficiency of **Applicative Order** evaluation. I will defer to Ariola et al. for an explanation of how laziness provides the desirable properties of both NO and AO evaluation. "lazy languages only reduce an argument if the value of the corresponding formal parameter is needed for the evaluation of the procedure body"(Ariola et al 1995:233), this delayed evaluation is similar to NO, except that evaluation is delayed even further; rather than evaluating the entire λ-term only the expression in function position is evaluated. "after reducing the argument, the evaluator will remember the resulting value for future references to that formal parameter"(Ariola et al 1995:233) where AO ensures that bound variables are reduced only once by evaluating function arguments as they are substituted for named variables, lazy evaluation ensures that bound variables are only evaluated once by memoizing the result of evaluation and maintaining a reference from each λ-expression associated to the evaluated value. As mentioned in the section summary, the importance of evaluation order and intermediate normal forms is that they are necessary considerations for pragmatic implementations of programming languages predicated on the lambda calculus. The motivation for lazy evaluation follows logically from this consideration, as it is the 'best of both worlds'. However, it is not so straightforward, there is an unfortunate quirk with lazyness, namely that one "cannot use the calculus to reason about sharing in the evaluation of a program"(Ariola et al 1995:233). Ariola et al. provide a solution to this quirk in their paper _A Call-By-Need Lambda Calculus_, however that is beyond the scope of this post. I bring up the difficulty of formalizing laziness within lambda calculus to demonstrate how complicated the operationalization of these calculi can be. However, the foundational building blocks for reasoning about the operational semantics of the lambda calculus are intermediate normal forms, and evaluation strategies.
+Lazy evaluation has the benefit of terminating as frequently as **Normal Order** evaluation, but maintaining the efficiency of **Applicative Order** evaluation. I will defer to Ariola et al. for an explanation of how laziness provides the desirable properties of both NO and AO evaluation. "lazy languages only reduce an argument if the value of the corresponding formal parameter is needed for the evaluation of the procedure body"(Ariola et al 1995:233), this delayed evaluation is similar to NO, except that evaluation is delayed even further; rather than evaluating the entire λ-term only the expression in function position is evaluated. "after reducing the argument, the evaluator will remember the resulting value for future references to that formal parameter"(Ariola et al 1995:233) where AO ensures that bound variables are reduced only once by evaluating function arguments as they are substituted for named variables, lazy evaluation ensures that bound variables are only evaluated once by memoizing the result of evaluation and maintaining a reference from each λ-expression to the associated evaluated value. As mentioned in the section summary, the importance of evaluation order and intermediate normal forms is that they are necessary considerations for pragmatic implementations of programming languages predicated on the lambda calculus. The motivation for lazy evaluation follows logically from this consideration, as it is the 'best of both worlds'. However, it is not so straightforward, there is an unfortunate quirk with lazyness, namely that one "cannot use the calculus to reason about sharing in the evaluation of a program"(Ariola et al 1995:233). Ariola et al. provide a solution to this quirk in their paper _A Call-By-Need Lambda Calculus_, however that is beyond the scope of this post. I bring up the difficulty of formalizing laziness within lambda calculus to demonstrate how complicated the operationalization of these calculi can be. However, the foundational building blocks for reasoning about the operational semantics of the lambda calculus are intermediate normal forms, and evaluation strategies.
 
 # References
 1. Abramsky, Samson. “The Lazy Lambda Calculus.” Declarative Programming, March 1, 2002.
 2. Ariola, Zena M., John Maraist, Martin Odersky, Matthias Felleisen, and Philip Wadler. “A Call-by-Need Lambda Calculus.” In Proceedings of the 22nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages, 233–246. POPL ’95. New York, NY, USA: Association for Computing Machinery, 1995. https://doi.org/10.1145/199448.199507.
 3. Michaelson, Greg. An Introduction to Functional Programming Through Lambda Calculus. Courier Corporation, 2011.
 4. Turner, David. “Church’s Thesis and Functional Programming.” JOURNAL OF UNIVERSAL COMPUTER SCIENCE 10 (2004): 187–209.
+
+Thank you to Li-yao Xia for providing feedback, and to monoidmusician for discussing the distinction between Weak Head Normal Form and Head Normal Form with me.
 
 If you would like to comment on this post, the comments section is [here](https://github.com/JonathanLorimer/personal-website-builder/issues/2)
