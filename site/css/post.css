@@ -36,13 +36,6 @@
   list-style-type: decimal;
 }
 
- {
-  margin-top: 1rem;
-  font-size: 1.6rem;
-  margin-left: 3rem;
-  list-style-type: decimal;
-}
-
 .post-content li ul {
   margin-top: 0rem;
   font-size: 1.6rem;
@@ -52,6 +45,10 @@
 
 .post-content a {
   color: #5C6784
+}
+
+.post-content p {
+  text-align: justify;
 }
 
 .byline {
