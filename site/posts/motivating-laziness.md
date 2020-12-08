@@ -1,7 +1,7 @@
 ---
 title: "Intro to FP Through λ-Calc Part 1. - Motivating Laziness"
 author: Jonathan Lorimer
-date: 19/03/2020
+date: 31/08/2020
 datePretty: Mar 19, 2020
 description: "Introduction to Functional Programming Through Lambda Calculus gave a thorough explanation of evaluation in lambda calculus, I found this helped motivate a better understanding of evaluation in haskell!"
 tags: [lambda-calculus]
