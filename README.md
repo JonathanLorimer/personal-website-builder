@@ -3,17 +3,16 @@
 git clone git@github.com:JonathanLorimer/personal-website-builder.git
 cd personal-website-builder
 git clone git@github.com:JonathanLorimer/jonathanlorimer.github.io.git docs
-stack build
+nix-shell
+ref
 ```
 
 # Building the Site
-
 ```
-stack exec build-site
+run
 ```
 
 # Running the Server
-- Install `npm` and `serve`
 ```
 serve docs
 ```
