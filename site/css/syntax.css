@@ -1,4 +1,5 @@
 pre {
+    font-family: 'Iosevka', sans-serif ;
     background-color: #1b2b34;
     padding: 0rem 1.6rem 1.6rem;
     margin: 1rem 0rem;
@@ -7,9 +8,15 @@ pre {
 }
 
 code {
+    font-family: 'Iosevka', sans-serif ;
     background-color: #1b2b34;
     color: #d8dee9;
     padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+}
+
+p code {
+  font-size: 1.6rem;
 }
 
 /* KeyWordTok */
