@@ -1,4 +1,4 @@
-name:                slick-template
+name:                jonathanlorimerdev
 version:             0.1.0.0
 github:              "jonathanlorimer/jonathanlorimer.github.io"
 license:             BSD3
@@ -8,12 +8,11 @@ copyright:           "2020 Jonathan Lorimer"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
-synopsis:            My site built with slick!
-category:            Slick-Site
+synopsis:            Jonathan Lorimer's Personal Website
+category:            Static-Site
 
-description: My slick Site
+description: jonathanlorimer.dev
 
 executables:
   build-site:
