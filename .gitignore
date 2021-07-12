@@ -1,12 +1,10 @@
+# Haskell
 .stack-work/
 *~
 .shake
-.DS_Store
-docs/
 dist
 dist-*
 cabal-dev
-*.cabal
 *.o
 *.hi
 *.hie
@@ -23,10 +21,19 @@ cabal.sandbox.config
 *.hp
 *.eventlog
 .stack-work/
-cabal.project.local
-cabal.project.local~
 .HTF/
 .ghc.environment.*
 ghcid.txt
+
+# Web
 **/node_modules
 **/yarn-error.log
+
+# General
+.DS_Store
+
+# Nix
+result/
+
+# Application
+build/
